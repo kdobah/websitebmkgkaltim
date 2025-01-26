@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMKG Monitor</title>
+</head>
+<body>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f0f8ff;
+            transition: background 0.3s, color 0.3s;
+          }
+          
+          body.dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+          }
+          
+          header {
+            background: linear-gradient(90deg, #007bff, #0056b3);
+            color: white;
+            text-align: center;
+            padding: 25px 0;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+          }
+          
+          #clock, #date {
+            font-size: 1.8rem;
+            margin-top: 5px;
+            font-weight: bold;
+            display: block;
+            text-align: center;
+          }
+          
+          #date {
+            font-size: 1.2rem;
+          }
+          
+          .toggle-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+          }
+          
+          .toggle-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.3s, transform 0.2s;
+          }
+          
+          .toggle-button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+          }
+          
+          main {
+            padding: 30px;
+            text-align: center;
+          }
+          
+          h2 {
+            color: #333;
+            font-size: 24px;
+          }
+          
+          body.dark-mode h2 {
+            color: #ffffff;
+          }
+          
+          .weather-grid {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+          }
+          
+          .weather-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease-in-out;
+            position: relative;
+            min-width: 150px;
+            min-height: 120px;
+          }
+          
+          body.dark-mode .weather-card {
+            background: #1e1e1e;
+            color: white;
+          }
+          
+          .weather-card:hover {
+            transform: scale(1.05);
+          }
+          
+          .weather-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease-in-out;
+            position: relative;
+            min-width: 150px;
+            min-height: 160px; /* Tambahkan tinggi agar teks tidak tertutup */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between; /* Memberi ruang agar teks tidak tertutup */
+          }
+          
+          .weather-card img {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 10px; /* Jarak antara gambar dan teks */
+            position: static; /* Hapus absolute agar tidak menutupi teks */
+          }
+          
+          
+          
+          footer {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(90deg, #007bff, #0056b3);
+            color: white;
+            font-size: 14px;
+            margin-top: 30px;
+          }
+          
+          body.dark-mode footer {
+            background: #222;
+          }
+          
+    </style>
+    <header>
+        <h1>BMKG Monitor</h1>
+        <span id="date"></span>
+        <span id="clock"></span>
+    </header>
+
+    <div class="toggle-container">
+        <button class="toggle-button" id="themeToggle">Mode Gelap</button>
+    </div>
+
+    <main>
+        <h2>Cuaca Saat Ini</h2>
+        <div class="weather-grid">
+            <div class="weather-card">
+                <img src="https://img.harianjogja.com/posts/2022/12/29/1121596/cumulonimbus.JPG" alt="Berawan">
+                <p>Balikpapan</p>
+                <p>28°C</p>
+                <p>Berawan</p>
+            </div>
+            <div class="weather-card">
+                <img src="data:image/jpeg;base64,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" alt="Berawan">
+                <p>Samarinda</p>
+                <p>25°C</p>
+                <p>Berawan</p>
+            </div>
+            <div class="weather-card">
+                <img src="data:image/jpeg;base64,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" alt="Berawan">
+                <p>Banjarbaru</p>
+                <p>27°C</p>
+                <p>Berawan</p>
+            </div>
+            <div class="weather-card">
+                <img src="data:image/jpeg;base64,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" alt="Berawan">
+                <p>Bengkulu</p>
+                <p>29°C</p>
+                <p>Berawan</p>
+            </div>
+        </div>
+
+        <h2>Gempa Bumi Terkini</h2>
+        <div class="earthquake-info">
+            <p><strong>Waktu:</strong> 28 Desember 2024, 12:46:42 WITA</p>
+            <p><strong>Lokasi:</strong> Laut 31 km Timur Laut Enggano</p>
+            <p><strong>Magnitudo:</strong> 5.2</p>
+            <p><strong>Kedalaman:</strong> 10 km</p>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2025 BMKG Monitor
+        <i>email:iddokaltim@gmail.com</i>
+    </footer>
+    <script>
+        // Fungsi untuk memperbarui jam dan tanggal
+function updateTime() {
+    const now = new Date();
+    
+    // Format waktu
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
+    document.getElementById('clock').innerText = `${hours}:${minutes}:${seconds} WITA`;
+
+    // Format tanggal
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('date').innerText = now.toLocaleDateString('id-ID', options);
+}
+
+// Perbarui jam setiap detik
+setInterval(updateTime, 1000);
+updateTime(); // Jalankan langsung saat halaman dimuat
+
+// Fungsi untuk mode terang/gelap
+const themeToggle = document.getElementById('themeToggle');
+themeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    if (document.body.classList.contains('dark-mode')) {
+        themeToggle.innerText = "Mode Terang";
+    } else {
+        themeToggle.innerText = "Mode Gelap";
+    }
+});
+
+    </script>
+</body>
+</html>
